@@ -1,0 +1,4 @@
+include COPYING.txt
+include test_svg2rlg.py
+include svg2rlg_render_test.py
+recursive-include test-suite *.svg *.png
