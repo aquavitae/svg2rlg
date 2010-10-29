@@ -1,0 +1,14 @@
+COPYING.txt
+README.txt
+setup.py
+svg2rlg.py
+svg2rlg_render_test.py
+test_svg2rlg.py
+test-suite\png\butterfly.png
+test-suite\png\lion.png
+test-suite\png\tiger.png
+test-suite\png\world.png
+test-suite\svg\butterfly.svg
+test-suite\svg\lion.svg
+test-suite\svg\tiger.svg
+test-suite\svg\world.svg
