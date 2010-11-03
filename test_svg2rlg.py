@@ -9,130 +9,126 @@ version 0.3
 """
 import sys
 
-import nose
-from nose.tools import assert_raises
+import unittest
 
 from reportlab.lib.units import toLength
 import reportlab.lib.colors as colors
 
 from svg2rlg import *
 
-def test_parseStyle():
-    parse = parseStyle.parse
-    
-    txt = 'fill: red; stroke: blue; /* comment */ stroke-width: 3; line-height: 125%'
-    res = parse(txt)
-    
-    assert res.pop('fill') == 'red'
-    assert res.pop('stroke') == 'blue'
-    assert res.pop('stroke-width') == '3'
-    assert res.pop('line-height') == '125%'
-    assert len(res) == 0
-    
-def test_parseTransform():
-    parse = parseTransform.iterparse
-    
-    print parse('matrix(1.,2.,3.,4.,5.,6.)').next()
-    
-    assert parse('matrix(1.,2.,3.,4.,5.,6.)').next() == ('matrix', (1.,2.,3.,4.,5.,6.))
-    
-    test = parse('mat(1.,2.,3.,4.,5.,6.)')
-    assert_raises(SVGError, test.next)
-    
-    test = parse('matrix(1.,2.,3.,4.,5.)')
-    assert_raises(SVGError, test.next)
-    
-    assert parse('translate(-10,10)').next() == ('translate', (-10.,10.))
-    assert parse('translate(-10)').next() == ('translate', (-10.,0.))
-    
-    assert parse('scale(-1, 1.)').next() == ('scale', (-1.,1.))
-    assert parse('scale(-1)').next() == ('scale', (-1.,-1.))
-    
-    assert parse('rotate(-45)').next() == ('rotate', (-45.,None))
-    assert parse('rotate(-45, 1.,2.)').next() == ('rotate', (-45.,(1.,2.)))
-    
-    test = parse('rotate(-45, 1.,)')
-    assert_raises(SVGError, test.next)
-    
-    assert parse('skewX(-45)').next() == ('skewX', (-45.,))
-    assert parse('skewY(-45)').next() == ('skewY', (-45.,))
-    
-    test = parse('scale(1.8) translate(0, -150)')
-    assert test.next() == ('scale', (1.8, 1.8))
-    assert test.next() == ('translate', (0.,-150.))
-    
-    
-def test_parsePath():
-    parse = parsePath.iterparse
-    
-    path = parse('M250 150 L150 350 L350 350 Z')
-    
-    expected = (('M', ((250.,150.),)), ('L', ((150.,350.),)), ('L', ((350.,350.),)),
-                ('Z', (None,)))
-    
-    for a, b in zip(path, expected):
-        assert a == b
-    
-    path = parse('M250,150 L150,350 L350,350 Z')
-    
-    for a, b in zip(path, expected):
-        print a, b
-        assert a == b
-    
-    path = parse('M250.,150. L150.,350. L350.,350. Z')
-    
-    for a, b in zip(path, expected):
-        print a, b
-        assert a == b
+class test_svg2rlg(unittest.TestCase):
+    def test_parseStyle(self):
+        parse = parseStyle.parse
         
-def test_parseLength():
-    assert parseLength('50%') == 50.
-    assert parseLength('50') == toLength('50')
-    assert parseLength('-646.595') == -646.595
-    assert parseLength('50em') == toLength('50')
-    assert parseLength('50ex') == toLength('50')
-    assert parseLength('50px') == toLength('50')
-    assert parseLength('50pc') == toLength('50pica')
-    assert parseLength('50pica') == toLength('50pica')
-    assert parseLength('50mm') == toLength('50mm')
-    assert parseLength('50cm') == toLength('50cm')
-    assert parseLength('50in') == toLength('50in')
-    assert parseLength('50i') == toLength('50i')
-    assert parseLength('50pt') == toLength('50pt')
-    assert parseLength('e-014') == 1e-14
-    
-    assert_raises(SVGError, parseLength, 'mm')
-    assert_raises(SVGError, parseLength, '50km')
-    assert_raises(SVGError, parseLength, '50.5.mm')
+        txt = 'fill: red; stroke: blue; /* comment */ stroke-width: 3; line-height: 125%'
+        res = parse(txt)
+        
+        self.assertTrue(res.pop('fill') == 'red')
+        self.assertTrue(res.pop('stroke') == 'blue')
+        self.assertTrue(res.pop('stroke-width') == '3')
+        self.assertTrue(res.pop('line-height') == '125%')
+        self.assertTrue(len(res) == 0)
+        
+    def test_parseTransform(self):
+        parse = parseTransform.iterparse
+        
+        self.assertTrue(parse('matrix(1.,2.,3.,4.,5.,6.)').next() == ('matrix', (1.,2.,3.,4.,5.,6.)))
+        
+        test = parse('mat(1.,2.,3.,4.,5.,6.)')
+        self.assertRaises(SVGError, test.next)
+        
+        test = parse('matrix(1.,2.,3.,4.,5.)')
+        self.assertRaises(SVGError, test.next)
+        
+        self.assertTrue(parse('translate(-10,10)').next() == ('translate', (-10.,10.)))
+        self.assertTrue(parse('translate(-10)').next() == ('translate', (-10.,0.)))
+        
+        self.assertTrue(parse('scale(-1, 1.)').next() == ('scale', (-1.,1.)))
+        self.assertTrue(parse('scale(-1)').next() == ('scale', (-1.,-1.)))
+        
+        self.assertTrue(parse('rotate(-45)').next() == ('rotate', (-45.,None)))
+        self.assertTrue(parse('rotate(-45, 1.,2.)').next() == ('rotate', (-45.,(1.,2.))))
+        
+        test = parse('rotate(-45, 1.,)')
+        self.assertRaises(SVGError, test.next)
+        
+        self.assertTrue(parse('skewX(-45)').next() == ('skewX', (-45.,)))
+        self.assertTrue(parse('skewY(-45)').next() == ('skewY', (-45.,)))
+        
+        test = parse('scale(1.8) translate(0, -150)')
+        self.assertTrue(test.next() == ('scale', (1.8, 1.8)))
+        self.assertTrue(test.next() == ('translate', (0.,-150.)))
+        
+        
+    def test_parsePath(self):
+        parse = parsePath.iterparse
+        
+        path = parse('M250 150 L150 350 L350 350 Z')
+        
+        expected = (('M', ((250.,150.),)), ('L', ((150.,350.),)), ('L', ((350.,350.),)),
+                    ('Z', (None,)))
+        
+        for a, b in zip(path, expected):
+            self.assertTrue(a == b)
+        
+        path = parse('M250,150 L150,350 L350,350 Z')
+        
+        for a, b in zip(path, expected):
+            self.assertTrue(a == b)
+        
+        path = parse('M250.,150. L150.,350. L350.,350. Z')
+        
+        for a, b in zip(path, expected):
+            self.assertTrue(a == b)
+            
+    def test_parseLength(self):
+        self.assertTrue(parseLength('50%') == 50.)
+        self.assertTrue(parseLength('50') == toLength('50'))
+        self.assertTrue(parseLength('-646.595') == -646.595)
+        self.assertTrue(parseLength('50em') == toLength('50'))
+        self.assertTrue(parseLength('50ex') == toLength('50'))
+        self.assertTrue(parseLength('50px') == toLength('50'))
+        self.assertTrue(parseLength('50pc') == toLength('50pica'))
+        self.assertTrue(parseLength('50pica') == toLength('50pica'))
+        self.assertTrue(parseLength('50mm') == toLength('50mm'))
+        self.assertTrue(parseLength('50cm') == toLength('50cm'))
+        self.assertTrue(parseLength('50in') == toLength('50in'))
+        self.assertTrue(parseLength('50i') == toLength('50i'))
+        self.assertTrue(parseLength('50pt') == toLength('50pt'))
+        self.assertTrue(parseLength('e-014') == 1e-14)
+        
+        self.assertRaises(SVGError, parseLength, 'mm')
+        self.assertRaises(SVGError, parseLength, '50km')
+        self.assertRaises(SVGError, parseLength, '50.5.mm')
 
-def test_parseColor():
-    assert parseColor('none') == None
-    assert parseColor('currentColor') == 'currentColor'
-    assert parseColor('transparent') == colors.Color(0.,0.,0.,0.)
-    
-    assert parseColor('dimgrey') == colors.dimgrey
-    assert_raises(SVGError, parseColor, 'unknown')
-    
-    assert parseColor('#fab') == colors.HexColor('#ffaabb')
-    assert_raises(SVGError, parseColor, '#fa')
-    
-    assert parseColor('#1a01FF') == colors.HexColor('#1a01FF')
-    assert_raises(SVGError, parseColor, '#1a01F')
-    
-    assert parseColor('rgb(128,9,255)') == colors.Color(128/255.,9/255.,255/255.)
-    assert parseColor('rgb(128, 9, 255)') == colors.Color(128/255.,9/255.,255/255.)
-    assert parseColor('Rgb(128,9,255)') == colors.Color(128/255.,9/255.,255/255.)
-    assert_raises(SVGError, parseColor, 'rgb(128,9,256)')
-    
-    assert parseColor('rgb(40%,90%,8%)') == colors.Color(40/100.,90/100.,8/100.)
-    assert parseColor('rgb(40%, 90%, 8%)') == colors.Color(40/100.,90/100.,8/100.)
-    assert parseColor('rgB(40%,90%,8%)') == colors.Color(40/100.,90/100.,8/100.)
-    assert_raises(SVGError, parseColor, 'rgb(40%,101%,8%)')
-    
-    assert_raises(SVGError, parseColor, '')
-    assert_raises(SVGError, parseColor, '1a01FF')
-    assert_raises(SVGError, parseColor, 'rgb(40%,90%,8%')
+    def test_parseColor(self):
+        self.assertTrue(parseColor('none') == None)
+        self.assertTrue(parseColor('currentColor') == 'currentColor')
+        self.assertTrue(parseColor('transparent') == colors.Color(0.,0.,0.,0.))
+        
+        self.assertTrue(parseColor('dimgrey') == colors.dimgrey)
+        self.assertRaises(SVGError, parseColor, 'unknown')
+        
+        self.assertTrue(parseColor('#fab') == colors.HexColor('#ffaabb'))
+        self.assertRaises(SVGError, parseColor, '#fa')
+        
+        self.assertTrue(parseColor('#1a01FF') == colors.HexColor('#1a01FF'))
+        self.assertRaises(SVGError, parseColor, '#1a01F')
+        
+        self.assertTrue(parseColor('rgb(128,9,255)') == colors.Color(128/255.,9/255.,255/255.))
+        self.assertTrue(parseColor('rgb(128, 9, 255)') == colors.Color(128/255.,9/255.,255/255.))
+        self.assertTrue(parseColor('Rgb(128,9,255)') == colors.Color(128/255.,9/255.,255/255.))
+        self.assertRaises(SVGError, parseColor, 'rgb(128,9,256)')
+        
+        self.assertTrue(parseColor('rgb(40%,90%,8%)') == colors.Color(40/100.,90/100.,8/100.))
+        self.assertTrue(parseColor('rgb(40%, 90%, 8%)') == colors.Color(40/100.,90/100.,8/100.))
+        self.assertTrue(parseColor('rgB(40%,90%,8%)') == colors.Color(40/100.,90/100.,8/100.))
+        self.assertRaises(SVGError, parseColor, 'rgb(40%,101%,8%)')
+        
+        self.assertRaises(SVGError, parseColor, '')
+        self.assertRaises(SVGError, parseColor, '1a01FF')
+        self.assertRaises(SVGError, parseColor, 'rgb(40%,90%,8%')
     
 if __name__ == "__main__":
-    sys.argv.append("--verbosity=2")
-    result = nose.runmodule()
+    sys.dont_write_bytecode = True
+    unittest.main()
