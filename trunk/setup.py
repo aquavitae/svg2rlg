@@ -9,7 +9,8 @@ setup(
     author='Runar Tenfjord',
     author_email = 'runar.tenfjord@tenko.no',
     license = 'BSD',
-    url = 'http://pypi.python.org/pypi/svg2rlg/',
+    url = 'http://code.google.com/p/svg2rlg/',
+    download_url = 'http://pypi.python.org/pypi/svg2rlg/',
     requires = ['reportlab'],
     
     classifiers=[
