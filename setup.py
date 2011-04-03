@@ -7,7 +7,7 @@ setup(
     py_modules = ['svg2rlg'],
     version = '0.3',
     author='Runar Tenfjord',
-    author_email = 'runar.tenfjord@tenko.no',
+    author_email = 'runar.tenfjord@gmail.com',
     license = 'BSD',
     url = 'http://code.google.com/p/svg2rlg/',
     download_url = 'http://pypi.python.org/pypi/svg2rlg/',

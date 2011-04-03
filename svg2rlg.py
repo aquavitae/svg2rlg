@@ -748,27 +748,36 @@ STYLES_FONT = frozenset(('font-family','font-size','text-anchor'))
 class Renderer:
     LINK = '{http://www.w3.org/1999/xlink}href'
     
-    SVG_DEFS        = '{http://www.w3.org/2000/svg}defs'
-    SVG_ROOT        = '{http://www.w3.org/2000/svg}svg'
-    SVG_A           = '{http://www.w3.org/2000/svg}a'
-    SVG_G           = '{http://www.w3.org/2000/svg}g'
-    SVG_SYMBOL      = '{http://www.w3.org/2000/svg}symbol'
-    SVG_USE         = '{http://www.w3.org/2000/svg}use'
-    SVG_RECT        = '{http://www.w3.org/2000/svg}rect'
-    SVG_CIRCLE      = '{http://www.w3.org/2000/svg}circle'
-    SVG_ELLIPSE     = '{http://www.w3.org/2000/svg}ellipse'
-    SVG_LINE        = '{http://www.w3.org/2000/svg}line'
-    SVG_POLYLINE    = '{http://www.w3.org/2000/svg}polyline'
-    SVG_POLYGON     = '{http://www.w3.org/2000/svg}polygon'
-    SVG_PATH        = '{http://www.w3.org/2000/svg}path'
-    SVG_TEXT        = '{http://www.w3.org/2000/svg}text'
-    SVG_TSPAN       = '{http://www.w3.org/2000/svg}tspan'
-    SVG_IMAGE       = '{http://www.w3.org/2000/svg}image'
+    SVG_NS = '{http://www.w3.org/2000/svg}'
+    SVG_ROOT        = SVG_NS + 'svg'
+    SVG_A           = SVG_NS + 'a'
+    SVG_G           = SVG_NS + 'g'
+    SVG_TITLE       = SVG_NS + 'title'
+    SVG_DESC        = SVG_NS + 'desc'
+    SVG_DEFS        = SVG_NS + 'defs'
+    SVG_SYMBOL      = SVG_NS + 'symbol'
+    SVG_USE         = SVG_NS + 'use'
+    SVG_RECT        = SVG_NS + 'rect'
+    SVG_CIRCLE      = SVG_NS + 'circle'
+    SVG_ELLIPSE     = SVG_NS + 'ellipse'
+    SVG_LINE        = SVG_NS + 'line'
+    SVG_POLYLINE    = SVG_NS + 'polyline'
+    SVG_POLYGON     = SVG_NS + 'polygon'
+    SVG_PATH        = SVG_NS + 'path'
+    SVG_TEXT        = SVG_NS + 'text'
+    SVG_TSPAN       = SVG_NS + 'tspan'
+    SVG_IMAGE       = SVG_NS + 'image'
     
-    SVG_NODES = frozenset((SVG_ROOT, SVG_A, SVG_G, SVG_SYMBOL, SVG_USE, SVG_RECT,
-                           SVG_CIRCLE, SVG_ELLIPSE, SVG_LINE, SVG_POLYLINE,
-                           SVG_POLYGON, SVG_PATH, SVG_TEXT, SVG_IMAGE))
-                           
+    SVG_NODES = frozenset((
+        SVG_ROOT, SVG_A, SVG_G, SVG_TITLE, SVG_DESC, SVG_DEFS, SVG_SYMBOL,
+        SVG_USE, SVG_RECT, SVG_CIRCLE, SVG_ELLIPSE, SVG_LINE, SVG_POLYLINE,
+        SVG_POLYGON, SVG_PATH, SVG_TEXT, SVG_TSPAN, SVG_IMAGE
+    ))
+    
+    SKIP_NODES = frozenset((SVG_TITLE, SVG_DESC, SVG_DEFS, SVG_SYMBOL))
+    PATH_NODES = frozenset((SVG_RECT, SVG_CIRCLE, SVG_ELLIPSE, SVG_LINE, 
+                            SVG_POLYLINE, SVG_POLYGON, SVG_PATH, SVG_TEXT))
+                                
     def __init__(self, filename):
         self.filename = filename
         self.level = 0
@@ -839,7 +848,7 @@ class Renderer:
             
             return self.drawing
         
-        elif node.tag in (self.SVG_G, self.SVG_A, self.SVG_SYMBOL):
+        elif node.tag in (self.SVG_G, self.SVG_A):
             self.level += 1
             
             # set this levels style
@@ -875,7 +884,7 @@ class Renderer:
             # link id
             link_id = node.get(self.LINK).lstrip('#')
             
-            # find linked node in defs section
+            # find linked node in defs or symbol section
             target = None
             for defs in self.root.getiterator(self.SVG_DEFS):
                 for element in defs:
@@ -884,7 +893,15 @@ class Renderer:
                         break
             
             if target is None:
-                raise SVGError("Could not find use node '%s'" % link_id)
+                for defs in self.root.getiterator(self.SVG_SYMBOL):
+                    for element in defs:
+                        if element.get('id') == link_id:
+                            target = element
+                            break
+                
+                if target is None:
+                    msg = "Could not find use node '%s'" % link_id
+                    raise SVGError(msg)
             
             self.render(target, group)
             
@@ -1380,7 +1397,11 @@ class Renderer:
                 self.addShape(group, node, shape, stroke = 'none')
                 
                 self.addShape(parent, node, group)
-                    
+        
+        elif node.tag == self.SVG_TITLE or node.tag == self.SVG_DESC:
+            # Skip non-graphics elements
+            return
+            
                 
     def addShape(self, parent, node, shape, **kwargs):
         
