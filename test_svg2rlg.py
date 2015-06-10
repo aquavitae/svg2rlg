@@ -32,32 +32,32 @@ class test_svg2rlg(unittest.TestCase):
     def test_parseTransform(self):
         parse = parseTransform.iterparse
         
-        self.assertTrue(parse('matrix(1.,2.,3.,4.,5.,6.)').next() == ('matrix', (1.,2.,3.,4.,5.,6.)))
+        self.assertTrue(next(parse('matrix(1.,2.,3.,4.,5.,6.)')) == ('matrix', (1.,2.,3.,4.,5.,6.)))
         
         test = parse('mat(1.,2.,3.,4.,5.,6.)')
-        self.assertRaises(SVGError, test.next)
+        self.assertRaises(SVGError, test.__next__)
         
         test = parse('matrix(1.,2.,3.,4.,5.)')
-        self.assertRaises(SVGError, test.next)
+        self.assertRaises(SVGError, test.__next__)
         
-        self.assertTrue(parse('translate(-10,10)').next() == ('translate', (-10.,10.)))
-        self.assertTrue(parse('translate(-10)').next() == ('translate', (-10.,0.)))
+        self.assertTrue(next(parse('translate(-10,10)')) == ('translate', (-10.,10.)))
+        self.assertTrue(next(parse('translate(-10)')) == ('translate', (-10.,0.)))
         
-        self.assertTrue(parse('scale(-1, 1.)').next() == ('scale', (-1.,1.)))
-        self.assertTrue(parse('scale(-1)').next() == ('scale', (-1.,-1.)))
+        self.assertTrue(next(parse('scale(-1, 1.)')) == ('scale', (-1.,1.)))
+        self.assertTrue(next(parse('scale(-1)')) == ('scale', (-1.,-1.)))
         
-        self.assertTrue(parse('rotate(-45)').next() == ('rotate', (-45.,None)))
-        self.assertTrue(parse('rotate(-45, 1.,2.)').next() == ('rotate', (-45.,(1.,2.))))
+        self.assertTrue(next(parse('rotate(-45)')) == ('rotate', (-45.,None)))
+        self.assertTrue(next(parse('rotate(-45, 1.,2.)')) == ('rotate', (-45.,(1.,2.))))
         
         test = parse('rotate(-45, 1.,)')
-        self.assertRaises(SVGError, test.next)
+        self.assertRaises(SVGError, test.__next__)
         
-        self.assertTrue(parse('skewX(-45)').next() == ('skewX', (-45.,)))
-        self.assertTrue(parse('skewY(-45)').next() == ('skewY', (-45.,)))
+        self.assertTrue(next(parse('skewX(-45)')) == ('skewX', (-45.,)))
+        self.assertTrue(next(parse('skewY(-45)')) == ('skewY', (-45.,)))
         
         test = parse('scale(1.8) translate(0, -150)')
-        self.assertTrue(test.next() == ('scale', (1.8, 1.8)))
-        self.assertTrue(test.next() == ('translate', (0.,-150.)))
+        self.assertTrue(next(test) == ('scale', (1.8, 1.8)))
+        self.assertTrue(next(test) == ('translate', (0.,-150.)))
         
         
     def test_parsePath(self):
