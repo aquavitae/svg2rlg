@@ -1,4 +1,10 @@
-This is a Python3 fork from google code
+[![Build Status](https://travis-ci.org/aquavitae/svg2rlg.svg?branch=master)](https://travis-ci.org/aquavitae/svg2rlg)
+
+# SVG2RLG
+
+This is a Python3 fork from google code.  What follows is the original readme.  
+
+---------
 
 svg2rlg is a tool to convert from SVG to reportlab graphics objects.
 
