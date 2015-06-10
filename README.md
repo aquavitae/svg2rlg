@@ -1,3 +1,5 @@
+This is a Python3 fork from google code
+
 svg2rlg is a tool to convert from SVG to reportlab graphics objects.
 
 License: BSD
