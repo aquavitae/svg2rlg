@@ -9,6 +9,7 @@ version 0.3
 """
 
 import sys
+from xml.etree import ElementTree as etree
 
 import unittest
 
@@ -130,6 +131,72 @@ class test_svg2rlg(unittest.TestCase):
         self.assertRaises(SVGError, parseColor, '')
         self.assertRaises(SVGError, parseColor, '1a01FF')
         self.assertRaises(SVGError, parseColor, 'rgb(40%,90%,8%')
+
+
+class TestPath(unittest.TestCase):
+
+    def setUp(self):
+        self.renderer = Renderer('testfile')
+
+    def getnode(self, xml):
+        xml = '''<?xml version="1.0"?>
+            <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+                    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+             <svg xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink">
+                {}
+            </svg>
+        '''.format(xml)
+        return etree.fromstring(xml)
+
+    def test_line(self):
+        root = self.getnode('<path d="M 5 5 L 10 10" />')
+        self.renderer.render(root)
+        path = self.renderer.mainGroup.contents[0]
+        self.assertEqual(path.points, [5, 5, 10, 10])
+
+    def test_close(self):
+        root = self.getnode('<path d="M 5 5 Z M 10 10" />')
+        self.renderer.render(root)
+        path = self.renderer.mainGroup.contents[0]
+        self.assertEqual(path.points, [5, 5, 10, 10])
+
+    def test_curve_cubic_absolute(self):
+        root = self.getnode('<path d="M 5 5 C 4 6 11 12 10 10" />')
+        self.renderer.render(root)
+        path = self.renderer.mainGroup.contents[0]
+        self.assertEqual(path.points, [5, 5, 4, 6, 11, 12, 10, 10])
+
+    def test_curve_cubic_relative(self):
+        root = self.getnode('<path d="M 5 5 c -1 1 6 7 5 5" />')
+        self.renderer.render(root)
+        path = self.renderer.mainGroup.contents[0]
+        self.assertEqual(path.points, [5, 5, 4, 6, 11, 12, 10, 10])
+
+    def test_curve_quadratic_absolute(self):
+        root = self.getnode('<path d="M 10 10 Q 13 13 19 19" />')
+        self.renderer.render(root)
+        path = self.renderer.mainGroup.contents[0]
+        self.assertEqual(path.points, [10, 10, 12, 12, 15, 15, 19, 19])
+
+    def test_curve_quadratic_relative(self):
+        root = self.getnode('<path d="M 10 10 q 3 3 9 9" />')
+        self.renderer.render(root)
+        path = self.renderer.mainGroup.contents[0]
+        self.assertEqual(path.points, [10, 10, 12, 12, 15, 15, 19, 19])
+
+    def test_curve_smooth_absolute(self):
+        root = self.getnode('<path d="M 5 5 T 11 11" />')
+        self.renderer.render(root)
+        path = self.renderer.mainGroup.contents[0]
+        self.assertEqual(path.points, [5, 5, 5, 5, 7, 7, 11, 11])
+
+    def test_curve_smooth_relative(self):
+        root = self.getnode('<path d="M 5 5 T 11 11" />')
+        self.renderer.render(root)
+        path = self.renderer.mainGroup.contents[0]
+        self.assertEqual(path.points, [5, 5, 5, 5, 7, 7, 11, 11])
+
 
 if __name__ == "__main__":
     sys.dont_write_bytecode = True
