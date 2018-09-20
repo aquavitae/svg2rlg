@@ -1510,5 +1510,3 @@ if __name__ == "__main__":
 
     drawing = svg2rlg(source)
     drawing.save(formats=['pdf'], outDir='.', fnRoot=name)
-
-    os.startfile(name + '.pdf')
