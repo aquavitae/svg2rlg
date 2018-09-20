@@ -12,7 +12,7 @@ setup(
     url = 'http://code.google.com/p/svg2rlg/',
     download_url = 'http://pypi.python.org/pypi/svg2rlg/',
     requires = ['reportlab'],
-    
+
     classifiers=[
           'Environment :: Console',
           'Development Status :: 4 - Beta',
@@ -22,7 +22,7 @@ setup(
           'Programming Language :: Python',
           'Topic :: Multimedia :: Graphics :: Graphics Conversion',
     ],
-          
+
     description = 'Convert SVG to Reportlab drawing',
     long_description = '''**svg2rlg** is a small utility to convert SVG to reportlab graphics.
 
