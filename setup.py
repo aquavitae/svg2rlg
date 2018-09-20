@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name = 'svg2rlg',
@@ -12,6 +12,8 @@ setup(
     url = 'http://code.google.com/p/svg2rlg/',
     download_url = 'http://pypi.python.org/pypi/svg2rlg/',
     requires = ['reportlab'],
+    entry_points = {
+                'console_scripts': ['svg2rlg = svg2rlg:main']},
 
     classifiers=[
           'Environment :: Console',

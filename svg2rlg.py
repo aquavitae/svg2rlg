@@ -1498,7 +1498,7 @@ def svg2rlg(filename):
     return renderer.render(xml)
 
 
-if __name__ == "__main__":
+def main():
     import sys
     import os
 
