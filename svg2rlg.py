@@ -1509,4 +1509,4 @@ def main():
     name, ext = os.path.splitext(filename)
 
     drawing = svg2rlg(source)
-    drawing.save(formats=['pdf'], outDir='.', fnRoot=name)
+    drawing.save(formats=['pdf'], outDir=os.getcwd(), fnRoot=name)
