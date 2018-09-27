@@ -1416,7 +1416,7 @@ class Renderer:
                 setattr(shape, attrname, converter(value))
 
         # defaults
-        if isinstance(shape, String):
+        if isinstance(shape, (String, Rect)):
             if shape.fillColor is None:
                 shape.fillColor = colors.black
 
@@ -1424,7 +1424,7 @@ class Renderer:
             if shape.strokeColor is None:
                 shape.strokeColor = colors.black
 
-        elif isinstance(shape, (Rect, Circle, Ellipse, Polygon)):
+        elif isinstance(shape, (Circle, Ellipse, Polygon)):
             if shape.fillColor is None and shape.strokeColor is None:
                 shape.strokeColor = colors.black
 
