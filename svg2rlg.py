@@ -1498,7 +1498,7 @@ def svg2rlg(filename):
     return renderer.render(xml)
 
 
-if __name__ == "__main__":
+def main():
     import sys
     import os
 
@@ -1509,6 +1509,4 @@ if __name__ == "__main__":
     name, ext = os.path.splitext(filename)
 
     drawing = svg2rlg(source)
-    drawing.save(formats=['pdf'], outDir='.', fnRoot=name)
-
-    os.startfile(name + '.pdf')
+    drawing.save(formats=['pdf'], outDir=os.getcwd(), fnRoot=name)
