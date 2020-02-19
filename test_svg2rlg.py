@@ -38,10 +38,12 @@ class test_svg2rlg(unittest.TestCase):
         self.assertTrue(next(parse('matrix(1.,2.,3.,4.,5.,6.)')) == ('matrix', (1.,2.,3.,4.,5.,6.)))
 
         test = parse('mat(1.,2.,3.,4.,5.,6.)')
-        self.assertRaises(SVGError, test.__next__)
+        with self.assertRaises(SVGError):
+            next(test)
 
         test = parse('matrix(1.,2.,3.,4.,5.)')
-        self.assertRaises(SVGError, test.__next__)
+        with self.assertRaises(SVGError):
+            next(test)
 
         self.assertTrue(next(parse('translate(-10,10)')) == ('translate', (-10.,10.)))
         self.assertTrue(next(parse('translate(-10)')) == ('translate', (-10.,0.)))
@@ -53,7 +55,8 @@ class test_svg2rlg(unittest.TestCase):
         self.assertTrue(next(parse('rotate(-45, 1.,2.)')) == ('rotate', (-45.,(1.,2.))))
         test = parse('rotate(-45, 1.,)')
 
-        self.assertRaises(SVGError, test.__next__)
+        with self.assertRaises(SVGError):
+            next(test)
 
         self.assertTrue(next(parse('skewX(-45)')) == ('skewX', (-45.,)))
         self.assertTrue(next(parse('skewY(-45)')) == ('skewY', (-45.,)))
@@ -100,9 +103,12 @@ class test_svg2rlg(unittest.TestCase):
         self.assertTrue(parseLength('50pt') == toLength('50pt'))
         self.assertTrue(parseLength('e-014') == 1e-14)
 
-        self.assertRaises(SVGError, parseLength, 'mm')
-        self.assertRaises(SVGError, parseLength, '50km')
-        self.assertRaises(SVGError, parseLength, '50.5.mm')
+        with self.assertRaises(SVGError):
+            parseLength('mm')
+        with self.assertRaises(SVGError):
+            parseLength('50km')
+        with self.assertRaises(SVGError):
+            parseLength('50.5.mm')
 
     def test_parseColor(self):
         self.assertTrue(parseColor('none') == None)
@@ -110,27 +116,35 @@ class test_svg2rlg(unittest.TestCase):
         self.assertTrue(parseColor('transparent') == colors.Color(0.,0.,0.,0.))
 
         self.assertTrue(parseColor('dimgrey') == colors.dimgrey)
-        self.assertRaises(SVGError, parseColor, 'unknown')
+        with self.assertRaises(SVGError):
+            parseColor('unknown')
 
         self.assertTrue(parseColor('#fab') == colors.HexColor('#ffaabb'))
-        self.assertRaises(SVGError, parseColor, '#fa')
+        with self.assertRaises(SVGError):
+            parseColor('#fa')
 
         self.assertTrue(parseColor('#1a01FF') == colors.HexColor('#1a01FF'))
-        self.assertRaises(SVGError, parseColor, '#1a01F')
+        with self.assertRaises(SVGError):
+            parseColor('#1a01F')
 
         self.assertTrue(parseColor('rgb(128,9,255)') == colors.Color(128/255.,9/255.,255/255.))
         self.assertTrue(parseColor('rgb(128, 9, 255)') == colors.Color(128/255.,9/255.,255/255.))
         self.assertTrue(parseColor('Rgb(128,9,255)') == colors.Color(128/255.,9/255.,255/255.))
-        self.assertRaises(SVGError, parseColor, 'rgb(128,9,256)')
+        with self.assertRaises(SVGError):
+            parseColor('rgb(128,9,256)')
 
         self.assertTrue(parseColor('rgb(40%,90%,8%)') == colors.Color(40/100.,90/100.,8/100.))
         self.assertTrue(parseColor('rgb(40%, 90%, 8%)') == colors.Color(40/100.,90/100.,8/100.))
         self.assertTrue(parseColor('rgB(40%,90%,8%)') == colors.Color(40/100.,90/100.,8/100.))
-        self.assertRaises(SVGError, parseColor, 'rgb(40%,101%,8%)')
+        with self.assertRaises(SVGError):
+            parseColor('rgb(40%,101%,8%)')
 
-        self.assertRaises(SVGError, parseColor, '')
-        self.assertRaises(SVGError, parseColor, '1a01FF')
-        self.assertRaises(SVGError, parseColor, 'rgb(40%,90%,8%')
+        with self.assertRaises(SVGError):
+            parseColor('')
+        with self.assertRaises(SVGError):
+            parseColor('1a01FF')
+        with self.assertRaises(SVGError):
+            parseColor('rgb(40%,90%,8%')
 
 
 class TestPath(unittest.TestCase):
