@@ -405,7 +405,7 @@ class SVGStyle(Lexer):
         (delimiter, r'[ :;\n]'),
         (comment, r'/\*.+\*/'),
         (name, r'[\w\-#]+?(?=:)'),
-        (value, r'[\w\-#\.\(\)%,][\w \-#\.\(\)%,]*?(?=[;])'),
+        (value, r"[\w\-#\.\(\)%',][\w \-#\.\(\)%',]*?(?=[;])"),
     )
 
     ignore = frozenset((delimiter, comment))

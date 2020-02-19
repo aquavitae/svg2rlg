@@ -23,13 +23,14 @@ class test_svg2rlg(unittest.TestCase):
     def test_parseStyle(self):
         parse = parseStyle.parse
 
-        txt = 'fill: red; stroke: blue; /* comment */ stroke-width: 3; line-height: 125%'
+        txt = "fill: red; stroke: blue; /* comment */ stroke-width: 3; line-height: 125%;font-family:'Liberation Sans'"
         res = parse(txt)
 
         self.assertTrue(res.pop('fill') == 'red')
         self.assertTrue(res.pop('stroke') == 'blue')
         self.assertTrue(res.pop('stroke-width') == '3')
         self.assertTrue(res.pop('line-height') == '125%')
+        self.assertTrue(res.pop('font-family') == "'Liberation Sans'")
         self.assertTrue(len(res) == 0)
 
     def test_parseTransform(self):
